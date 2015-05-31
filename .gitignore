@@ -3,6 +3,7 @@
 *.ko
 *.obj
 *.elf
+*.crf
 
 # Precompiled Headers
 *.gch
@@ -19,6 +20,7 @@
 *.so
 *.so.*
 *.dylib
+*.build_log.*
 
 # Executables
 *.exe
@@ -27,3 +29,7 @@
 *.i*86
 *.x86_64
 *.hex
+
+# Dirs
+MDK-ARM/Objects/
+MDK-ARM/Listings/
