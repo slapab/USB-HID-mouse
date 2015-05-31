@@ -27,3 +27,7 @@
 *.i*86
 *.x86_64
 *.hex
+
+# Dirs
+MDK-ARM/Objects/
+MDK-ARM/Listings/
