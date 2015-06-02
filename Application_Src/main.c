@@ -97,8 +97,8 @@ int main(void)
   SystemClock_Config();
 
   /* Configure LED3 */
-  BSP_LED_Init(LED3);   
-  
+  BSP_LED_Init(LED3);
+	BSP_LED_Init(LED4); 
   /*##-1- LCD Configuration ##################################################*/ 
   /* Configure 2 layers w/ Blending */
   //LCD_Config(); 
@@ -148,7 +148,7 @@ int main(void)
 	Point some_poly[5] = { { 0, 100}, {10, 120}, { 15, 135} , {75, 105}, {85, 85} } ;
 	BSP_LCD_DrawPolygon( &some_poly[0], 5 ) ;
 	BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
-	BSP_LCD_FillPolygon( &some_poly[0], 5 );
+	BSP_LCD_FillPolygon( &some_poly[0], TS_FIFO_THRESHOLD_VALUE );
 	
 	
 	// ######## TOUCH PANEL ############
@@ -156,7 +156,7 @@ int main(void)
 	if ( status == TS_OK ) {
 		
 		// Additional initialization ( interrupts and fifo threshol )
-		BSP_TS_Init_extends(TS_I2C_ADDRESS, 10 );
+		BSP_TS_Init_extends(TS_I2C_ADDRESS );
 		
 		/*
 		BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);

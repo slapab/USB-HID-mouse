@@ -44,6 +44,9 @@
 // From ts_api_extends.c
 extern volatile sig_atomic_t ts_int_catched ;
 
+// From ts_api_extends.c
+extern volatile sig_atomic_t ts_buttons_delay ;
+
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -160,6 +163,9 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   HAL_IncTick();
+	
+	// For touch driver purposes
+	++ts_buttons_delay ;
 }
 
 /******************************************************************************/
