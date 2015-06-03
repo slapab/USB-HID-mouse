@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 
-#define TS_FIFO_THRESHOLD_VALUE 5
+#define TS_FIFO_THRESHOLD_VALUE 10
 
 
 /**
@@ -31,4 +31,7 @@ void TS_convertXY( uint16_t DeviceAddr, uint16_t no, uint8_t *pTab, uint16_t *pX
 
 TS_mouseInputTypeDef TS_check_button( uint16_t DeviceAddr, uint8_t *t_smpl, uint16_t *pX, uint16_t *pY ) ;
 TS_mouseInputTypeDef TS_check_slider( uint16_t DeviceAddr, uint8_t *t_smpl, uint16_t *pX, uint16_t *pY ) ;
+
+void Xmirror_points( const Point *in, Point *out, const uint8_t size ) ;
+
 #endif

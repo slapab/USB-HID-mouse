@@ -112,8 +112,8 @@ int main(void)
 	BSP_LCD_LayerDefaultInit(LCD_BACKGROUND_LAYER, LCD_FRAME_BUFFER);
 	BSP_LCD_LayerDefaultInit(LCD_FOREGROUND_LAYER, LCD_FRAME_BUFFER+BUFFER_OFFSET);
 	// Enable Foreground Layer
-	BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, ENABLE);
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, DISABLE);
+	BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, DISABLE);
+	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
 	
 	// Select Foreground Layer
 	BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
@@ -137,18 +137,35 @@ int main(void)
 	
 	/* Clear the LCD */ 
   BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGREEN); 
-  BSP_LCD_Clear(LCD_COLOR_LIGHTBLUE);
+  BSP_LCD_Clear(LCD_COLOR_BLACK);
 	
 	
 	BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
   BSP_LCD_SetFont(&Font16);
-  BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
+  //BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
 	
-	BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
-	Point some_poly[5] = { { 0, 100}, {10, 120}, { 15, 135} , {75, 105}, {85, 85} } ;
-	BSP_LCD_DrawPolygon( &some_poly[0], 5 ) ;
-	BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
-	BSP_LCD_FillPolygon( &some_poly[0], TS_FIFO_THRESHOLD_VALUE );
+	BSP_LCD_SetBackColor( 0xFF34DDDD ) ;
+	//Point some_poly[5] = { { 0, 100}, {10, 120}, { 15, 135} , {75, 105}, {85, 85} } ;
+	Point button_poly[6] = { { 1, 360 }, { 54, 360 }, { 54, 306 }, { 99, 261 }, { 99, 190 }, { 1, 190 } } ; 
+	Point mirr_poly[6] ;
+	Xmirror_points( &button_poly[0], &mirr_poly[0], 6 ) ;
+	//BSP_LCD_DrawPolygon( &some_poly[0], 6 ) ;
+	//BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
+	
+	BSP_LCD_SetTextColor(0xFF34DDDD); 
+	BSP_LCD_FillPolygon( &button_poly[0], 6 );
+	BSP_LCD_FillPolygon( &mirr_poly[0], 6 );
+		
+	//rectangle
+	BSP_LCD_SetTextColor(0xFF34DDDD);
+		BSP_LCD_FillRect( 112, 290, 16, 7 ) ;
+		//BSP_LCD_FillRect( 112, 260, 16, 7 ) ;
+		BSP_LCD_FillRect( 112, 230, 16, 7 ) ;
+		//BSP_LCD_FillRect( 112, 200, 16, 7 ) ;
+		BSP_LCD_FillRect( 112, 170, 16, 7 ) ;
+		//BSP_LCD_FillRect( 112, 140, 16, 7 ) ;
+		//BSP_LCD_DrawRect( 103, 300, 32, 7 );
+		
 	
 	
 	// ######## TOUCH PANEL ############

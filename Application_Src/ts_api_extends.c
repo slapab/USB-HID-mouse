@@ -43,7 +43,7 @@ void BSP_TS_Init_extends( uint16_t DeviceAddr ) {
 	
 	// Enable TC module with:
 	// Enable XY mode and movement tracking
-	IOE_Write( DeviceAddr, STMPE811_REG_TSC_CTRL,   (1<<4) | ( 1<<6 ) | 0x03 );
+	IOE_Write( DeviceAddr, STMPE811_REG_TSC_CTRL,   (1<<4) | ( 1<<5 ) | 0x03 );
   
   // Clear all the status pending bits if any
   IOE_Write( DeviceAddr, STMPE811_REG_INT_STA, 0xFF );
@@ -153,6 +153,7 @@ TS_mouseInputTypeDef TS_check_slider( uint16_t DeviceAddr, uint8_t *t_smpl, uint
 		
 		t_smpl[0] = t_smpl[1]  = 0 ;	// Y up counter and Y down counter
 		xavg = 0 ;	// X average
+		
 		for ( i = 0 ; i < fifo_size - 1 ; ++i ) {
 				change = pY[i] - pY[i+1] ;
 				if ( change <= 0 ) {
@@ -162,8 +163,10 @@ TS_mouseInputTypeDef TS_check_slider( uint16_t DeviceAddr, uint8_t *t_smpl, uint
 				}
 				
 				xavg += pX[i] ;
+				
 		}
 		xavg /= fifo_size - 1 ;
+		
 		
 		// If X is outsite of buttons
 		if ( (xavg < 2496) &&
@@ -176,7 +179,8 @@ TS_mouseInputTypeDef TS_check_slider( uint16_t DeviceAddr, uint8_t *t_smpl, uint
 			else {
 				return TS_MOUSE_SLIDER_DOWN ;
 			}
-		} 
+		} // for slide
+	
 
 	}
 	
@@ -276,4 +280,13 @@ void TS_convertXY( uint16_t DeviceAddr, uint16_t no, uint8_t *pTab, uint16_t *pX
 		
 	}
 	
+}
+
+
+void Xmirror_points( const Point *in, Point *out, const uint8_t size ) {
+	uint8_t i ;
+	for( i = 0 ; i < size ; ++i ) {
+		out[i].X  = 240 - in[i].X ;
+		out[i].Y  = in[i].Y ;
+	}
 }
