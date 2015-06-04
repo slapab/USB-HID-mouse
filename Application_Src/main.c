@@ -43,6 +43,7 @@
 #include "main.h"
 
 #include "ts_api_extends.h"
+#include "lcd_layout.h"
 
 
 //#include "st_logo1.h"
@@ -66,7 +67,15 @@ LTDC_HandleTypeDef LtdcHandle;
 static void LCD_Config(void); 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
+
+// FOR TESTS: 
+
 void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) ;
+void test_reg_func( TS_mouseInputTypeDef _state_ ) ;
+
+
+
+
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -104,67 +113,7 @@ int main(void)
   //LCD_Config(); 
 
 	BSP_LCD_Init();
-	
-	
-	//BSP_LCD_SetLayerAddress( LCD_BACKGROUND_LAYER, LCD_FRAME_BUFFER );
-	//BSP_LCD_SetLayerAddress( LCD_FOREGROUND_LAYER, LCD_FRAME_BUFFER+BUFFER_OFFSET );
-	// Init LCD buffers for layers
-	BSP_LCD_LayerDefaultInit(LCD_BACKGROUND_LAYER, LCD_FRAME_BUFFER);
-	BSP_LCD_LayerDefaultInit(LCD_FOREGROUND_LAYER, LCD_FRAME_BUFFER+BUFFER_OFFSET);
-	// Enable Foreground Layer
-	BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, DISABLE);
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
-	
-	// Select Foreground Layer
-	BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
-	BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
-
-	/* Clear the LCD */ 
-  BSP_LCD_SetBackColor(LCD_COLOR_WHITE); 
-  BSP_LCD_Clear(LCD_COLOR_LIGHTBLUE);
-  
-  /* Set the LCD Text Color */
-  BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
-  
-  /* Display LCD messages */
-  BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"STM32F429I BSP", CENTER_MODE);
-	
-	
-	//############# 2 warstawa - test
-	
-	// Select Background Layer
-	BSP_LCD_SelectLayer(LCD_BACKGROUND_LAYER);
-	
-	/* Clear the LCD */ 
-  BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGREEN); 
-  BSP_LCD_Clear(LCD_COLOR_BLACK);
-	
-	
-	BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
-  BSP_LCD_SetFont(&Font16);
-  //BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
-	
-	BSP_LCD_SetBackColor( 0xFF34DDDD ) ;
-	//Point some_poly[5] = { { 0, 100}, {10, 120}, { 15, 135} , {75, 105}, {85, 85} } ;
-	Point button_poly[6] = { { 1, 360 }, { 54, 360 }, { 54, 306 }, { 99, 261 }, { 99, 190 }, { 1, 190 } } ; 
-	Point mirr_poly[6] ;
-	Xmirror_points( &button_poly[0], &mirr_poly[0], 6 ) ;
-	//BSP_LCD_DrawPolygon( &some_poly[0], 6 ) ;
-	//BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
-	
-	BSP_LCD_SetTextColor(0xFF34DDDD); 
-	BSP_LCD_FillPolygon( &button_poly[0], 6 );
-	BSP_LCD_FillPolygon( &mirr_poly[0], 6 );
-		
-	//rectangle
-	BSP_LCD_SetTextColor(0xFF34DDDD);
-		BSP_LCD_FillRect( 112, 290, 16, 7 ) ;
-		//BSP_LCD_FillRect( 112, 260, 16, 7 ) ;
-		BSP_LCD_FillRect( 112, 230, 16, 7 ) ;
-		//BSP_LCD_FillRect( 112, 200, 16, 7 ) ;
-		BSP_LCD_FillRect( 112, 170, 16, 7 ) ;
-		//BSP_LCD_FillRect( 112, 140, 16, 7 ) ;
-		//BSP_LCD_DrawRect( 103, 300, 32, 7 );
+	lcd_prepLayers() ;
 		
 	
 	
@@ -174,6 +123,11 @@ int main(void)
 		
 		// Additional initialization ( interrupts and fifo threshol )
 		BSP_TS_Init_extends(TS_I2C_ADDRESS );
+		
+		// register new notify function
+		if ( 0 == TS_registerNotifyFunc( &test_reg_func ) )
+			BSP_LED_On( LED4 ) ;
+		
 		
 		/*
 		BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
@@ -219,6 +173,9 @@ int main(void)
 		
 		TS_checkEvent( TS_I2C_ADDRESS ) ;
 		
+		
+
+		
 		/*
 		HAL_Delay(1500) ;
 		BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
@@ -258,6 +215,19 @@ int main(void)
   }
 }
 
+void test_reg_func( TS_mouseInputTypeDef _state_ ) {
+	
+	
+		switch ( _state_ )
+		{
+			case TS_MOUSE_LEFT : BSP_LED_On( LED4 ) ; break ;
+			case TS_MOUSE_RIGHT: BSP_LED_On( LED3 ) ; break ;
+			case TS_MOUSE_SLIDER_UP : BSP_LED_On( LED4 ) ; HAL_Delay(70); BSP_LED_Off( LED4 );	break ;
+			case TS_MOUSE_SLIDER_DOWN: BSP_LED_On( LED3 ); HAL_Delay(70); BSP_LED_Off( LED3 );  break ;
+			case TS_MOUSE_NONE : BSP_LED_Off( LED3 ) ; BSP_LED_Off( LED4 ); break ;
+		}
+		
+}
 
 
 void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) {

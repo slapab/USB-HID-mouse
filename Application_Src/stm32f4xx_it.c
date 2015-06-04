@@ -46,6 +46,8 @@ extern volatile sig_atomic_t ts_int_catched ;
 
 // From ts_api_extends.c
 extern volatile sig_atomic_t ts_buttons_delay ;
+extern volatile sig_atomic_t ts_mouse_last_signal_delay ;
+extern volatile sig_atomic_t ts_slider_hop_time ;
 
 
 /** @addtogroup STM32F4xx_HAL_Examples
@@ -166,6 +168,9 @@ void SysTick_Handler(void)
 	
 	// For touch driver purposes
 	++ts_buttons_delay ;
+	++ts_mouse_last_signal_delay ;
+	if (ts_slider_hop_time > 0 )
+		++ts_slider_hop_time ;
 }
 
 /******************************************************************************/

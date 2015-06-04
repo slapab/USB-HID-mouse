@@ -409,6 +409,11 @@
           <GroupName>Application</GroupName>
           <Files>
             <File>
+              <FileName>lcd_layout.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application_Src\lcd_layout.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Application_Src\main.c</FilePath>
