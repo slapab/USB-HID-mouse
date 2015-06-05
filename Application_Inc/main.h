@@ -56,9 +56,11 @@
 #include "usbd_desc.h"
 #include "usbd_hid.h" 
 
-
-
 #include "stm32f429i_discovery_ts.h"
+#include "ts_api_extends.h"
+
+
+#include "stm32f429i_discovery_gyroscope.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/

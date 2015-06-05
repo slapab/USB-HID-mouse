@@ -41,7 +41,7 @@
 #include "stm32f429xx.h"
 #include "stm32f4xx.h"
 #include "main.h"
-#include "stm32f429i_discovery_gyroscope.h"
+
 #include "ts_api_extends.h"
 
 
@@ -77,7 +77,7 @@ void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) ;
 #define COMMENT 0
 
 
-float xyz_buff[3];
+static float xyz_buff[3];
 char buff_disp_xyz[30];
 float Xval, Yval, Zval = 0x00;
 	
@@ -113,6 +113,8 @@ int main(void)
   
   /* Start Device Process */
   USBD_Start(&USBD_Device);
+	
+
 
   /* Configure LED3 */
   BSP_LED_Init(LED3);   
