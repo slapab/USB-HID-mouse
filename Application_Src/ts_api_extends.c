@@ -29,7 +29,8 @@ static TS_mouseInputTypeDef mouse_current_state = TS_MOUSE_NONE ;
 static func_notify_TypeDef p_FuncToNotify[TS_NOTIFIED_FUNCTION_NO] = {NULL} ;
 
 
-
+// used for passing touch x and y ( position ) to other functions - registered notify functions
+static Point xy_act ;
 
 
 
@@ -410,7 +411,7 @@ static void TS_setCurrMouseState( const TS_mouseInputTypeDef _state_ ) {
 	for ( i = 0 ; i < TS_NOTIFIED_FUNCTION_NO ; ++i ) {
 			if ( NULL != p_FuncToNotify[i] ) {
 				// send notify
-				p_FuncToNotify[i]( _state_ ) ; 	
+				p_FuncToNotify[i]( _state_, &xy_act ) ;
 			}
 	}
 	

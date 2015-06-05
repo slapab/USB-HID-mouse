@@ -3,12 +3,13 @@
 
 #include <stdint.h>
 
+
 #define TS_CHECKING_PERIOD 20			// in ms
 #define TS_FIFO_THRESHOLD_VALUE 12
 #define TS_SLIDER_HOP_TIME 120		// in ms
 
 
-#define TS_NOTIFIED_FUNCTION_NO 3
+#define TS_NOTIFIED_FUNCTION_NO 4
 
 
 #define TS_EDGE_LEFT_BUTTON_X 1600
@@ -29,12 +30,12 @@ typedef enum
   TS_MOUSE_RIGHT = 0x02,
 	TS_MOUSE_SLIDER_UP = 0x03,
 	TS_MOUSE_SLIDER_DOWN = 0x04,
-	//TS_MOUSE_LEFT_HOLD = 0x05			// when was pressed and is holding - special action
+
 } TS_mouseInputTypeDef ;
 
 
 
-typedef void (*func_notify_TypeDef) ( const TS_mouseInputTypeDef ) ;
+typedef void (*func_notify_TypeDef) ( const TS_mouseInputTypeDef, const Point * const ) ;
 
 
 

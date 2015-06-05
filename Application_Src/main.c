@@ -71,7 +71,7 @@ static void Error_Handler(void);
 // FOR TESTS: 
 
 void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) ;
-void test_reg_func( TS_mouseInputTypeDef _state_ ) ;
+void test_reg_func( TS_mouseInputTypeDef _state_, const Point * const _inData_ ) ;
 
 
 
@@ -108,7 +108,8 @@ int main(void)
   /* Configure LED3 */
   BSP_LED_Init(LED3);
 	BSP_LED_Init(LED4); 
-  /*##-1- LCD Configuration ##################################################*/ 
+ 
+ /*##-1- LCD Configuration ##################################################*/ 
   /* Configure 2 layers w/ Blending */
   //LCD_Config(); 
 
@@ -121,71 +122,26 @@ int main(void)
   status = BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
 	if ( status == TS_OK ) {
 		
-		// Additional initialization ( interrupts and fifo threshol )
+		// Additional initialization ( interrupts and fifo threshold )
 		BSP_TS_Init_extends(TS_I2C_ADDRESS );
 		
 		// register new notify function
 		if ( 0 == TS_registerNotifyFunc( &test_reg_func ) )
 			BSP_LED_On( LED4 ) ;
 		
+		// register lcd notify function - for drawing action
+		if ( 0 == TS_registerNotifyFunc( &lcd_handleMouseNotify ) )
+			BSP_LED_On( LED4 ) ;
 		
-		/*
-		BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
-		BSP_LCD_DisplayStringAt(0, 40, (uint8_t*)"TS activated", CENTER_MODE);
-		
-		while( 1 ) {
-			BSP_TS_GetState( &touch_data ) ;
-			if( touch_data.TouchDetected ) {
-				
-				uint16toASCII( touch_data.X, &uint16_txt[0] ) ;
-				//BSP_LCD_DisplayStringAt(0, 80, &uint16_txt[0], CENTER_MODE);
-				BSP_LCD_ClearStringLine( 5 ) ;
-				BSP_LCD_DisplayStringAtLine( 5 , &uint16_txt[0] ) ;
-				uint16toASCII( touch_data.Y, &uint16_txt[0] ) ;
-				//BSP_LCD_DisplayStringAt(0, 100, &uint16_txt[0], CENTER_MODE);
-				BSP_LCD_ClearStringLine( 6 ) ;
-				BSP_LCD_DisplayStringAtLine( 6 , &uint16_txt[0] ) ;
-			}
-		}
-		*/
 	}
-	/*
-	HAL_Delay(1000);
 	
-	BSP_LCD_SetTransparency( LCD_FOREGROUND_LAYER , 100 );
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
-	
-	HAL_Delay(2000 ) ;
-	
-	// Turn Off Foreground Layer
-	BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, DISABLE);
-	
-	HAL_Delay(1000) ;
-
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
-	
-	HAL_Delay(1000) ;
-	
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, DISABLE);
-	*/
   while (1)
   {
 		
 		TS_checkEvent( TS_I2C_ADDRESS ) ;
-		
+		lcd_drawAction() ;
 		
 
-		
-		/*
-		HAL_Delay(1500) ;
-		BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
-		BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, DISABLE);
-		HAL_Delay(1500) ;
-		BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, ENABLE);
-		BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, DISABLE);
-		*/
-		
-		
 		
 		
 		
@@ -215,15 +171,15 @@ int main(void)
   }
 }
 
-void test_reg_func( TS_mouseInputTypeDef _state_ ) {
+void test_reg_func( TS_mouseInputTypeDef _state_ , const Point * const _inData_ ) {
 	
 	
 		switch ( _state_ )
 		{
 			case TS_MOUSE_LEFT : BSP_LED_On( LED4 ) ; break ;
 			case TS_MOUSE_RIGHT: BSP_LED_On( LED3 ) ; break ;
-			case TS_MOUSE_SLIDER_UP : BSP_LED_On( LED4 ) ; HAL_Delay(70); BSP_LED_Off( LED4 );	break ;
-			case TS_MOUSE_SLIDER_DOWN: BSP_LED_On( LED3 ); HAL_Delay(70); BSP_LED_Off( LED3 );  break ;
+			case TS_MOUSE_SLIDER_UP : BSP_LED_On( LED4 ) ; HAL_Delay(50); BSP_LED_Off( LED4 );	break ;
+			case TS_MOUSE_SLIDER_DOWN: BSP_LED_On( LED3 ); HAL_Delay(50); BSP_LED_Off( LED3 );  break ;
 			case TS_MOUSE_NONE : BSP_LED_Off( LED3 ) ; BSP_LED_Off( LED4 ); break ;
 		}
 		
