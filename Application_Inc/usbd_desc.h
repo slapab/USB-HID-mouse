@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
-  * @file    usbd_msc_storage.h
+  * @file    USB_Device/HID_Standalone/Inc/usbd_desc.h
   * @author  MCD Application Team
-  * @version V2.2.0
-  * @date    13-June-2014
-  * @brief   header file for the usbd_msc_storage.c file
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Header for usbd_desc.c module
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
   * You may not use this file except in compliance with the License.
@@ -23,76 +23,26 @@
   * limitations under the License.
   *
   ******************************************************************************
-  */ 
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-
-#ifndef __USBD_MSC_STORAGE_H_
-#define __USBD_MSC_STORAGE_H_
+#ifndef __USBD_DESC_H
+#define __USBD_DESC_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "usbd_msc.h"
+#include "usbd_def.h"
 
-/** @addtogroup STM32_USB_DEVICE_LIBRARY
-  * @{
-  */
-  
-/** @defgroup USBD_STORAGE
-  * @brief header file for the USBD_STORAGE.c file
-  * @{
-  */ 
+/* Exported types ------------------------------------------------------------*/
+/* Exported constants --------------------------------------------------------*/
+#define         DEVICE_ID1          (0x1FFF7A10)
+#define         DEVICE_ID2          (0x1FFF7A14)
+#define         DEVICE_ID3          (0x1FFF7A18)
 
-/** @defgroup USBD_STORAGE_Exported_Defines
-  * @{
-  */ 
-/**
-  * @}
-  */ 
+#define  USB_SIZ_STRING_SERIAL       0x1A
+/* Exported macro ------------------------------------------------------------*/
+/* Exported functions ------------------------------------------------------- */
+extern USBD_DescriptorsTypeDef HID_Desc;
 
-
-/** @defgroup USBD_STORAGE_Exported_Types
-  * @{
-  */
-
-
-/**
-  * @}
-  */ 
-
-
-
-/** @defgroup USBD_STORAGE_Exported_Macros
-  * @{
-  */ 
-
-/**
-  * @}
-  */ 
-
-/** @defgroup USBD_STORAGE_Exported_Variables
-  * @{
-  */ 
-extern USBD_StorageTypeDef  USBD_MSC_Template_fops;
-/**
-  * @}
-  */ 
-
-/** @defgroup USBD_STORAGE_Exported_FunctionsPrototype
-  * @{
-  */ 
-
-
-/**
-  * @}
-  */ 
-
-#endif /* __USBD_MSC_STORAGE_H_ */
-
-/**
-  * @}
-  */ 
-
-/**
-* @}
-*/ 
+#endif /* __USBD_DESC_H */
+ 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -81,6 +81,9 @@ float xyz_buff[3];
 char buff_disp_xyz[30];
 float Xval, Yval, Zval = 0x00;
 	
+USBD_HandleTypeDef USBD_Device;
+extern PCD_HandleTypeDef hpcd;
+	
 int main(void)
 {
 	uint8_t status = 0 ;
@@ -101,6 +104,15 @@ int main(void)
   
   /* Configure the system clock */
   SystemClock_Config();
+	
+		   /* Init Device Library */
+  USBD_Init(&USBD_Device, &HID_Desc, 0);
+  
+  /* Add Supported Class */
+  USBD_RegisterClass(&USBD_Device, USBD_HID_CLASS);
+  
+  /* Start Device Process */
+  USBD_Start(&USBD_Device);
 
   /* Configure LED3 */
   BSP_LED_Init(LED3);   
@@ -216,7 +228,8 @@ int main(void)
 	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, DISABLE);
 	*/
 	
-	 
+
+	
   while (1)
   {
 		 /* Read Gyro Angular data */
@@ -499,7 +512,7 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 360;
+  RCC_OscInitStruct.PLL.PLLN = 336;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 7;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);

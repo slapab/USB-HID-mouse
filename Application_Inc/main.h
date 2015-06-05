@@ -52,7 +52,10 @@
 #include "ili9341.h"
 #include "stm32f429i_discovery_lcd.h"
 
-//#include "..\Components\ili9341\ili9341.h" 
+#include "usbd_core.h"
+#include "usbd_desc.h"
+#include "usbd_hid.h" 
+
 
 
 #include "stm32f429i_discovery_ts.h"

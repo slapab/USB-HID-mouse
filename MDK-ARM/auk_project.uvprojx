@@ -429,9 +429,14 @@
               <FilePath>..\Application_Src\ts_api_extends.c</FilePath>
             </File>
             <File>
-              <FileName>usbd_hid.c</FileName>
+              <FileName>usbd_conf.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\STM32_USB_Device_Library\Class\HID\Src\usbd_hid.c</FilePath>
+              <FilePath>..\Application_Src\usbd_conf.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application_Src\usbd_desc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -617,6 +622,28 @@
         </Group>
         <Group>
           <GroupName>STM32_USBD_Library</GroupName>
+          <Files>
+            <File>
+              <FileName>usbd_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32_USB_Device_Library\Core\Src\usbd_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ctlreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ioreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32_USB_Device_Library\Core\Src\usbd_ioreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_hid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32_USB_Device_Library\Class\HID\Src\usbd_hid.c</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>
