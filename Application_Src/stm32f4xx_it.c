@@ -212,11 +212,8 @@ void SysTick_Handler (void)
   * @param  None
   * @retval None
   */
-#ifdef USE_USB_FS
-void OTG_FS_IRQHandler(void)
-#else
+
 void OTG_HS_IRQHandler(void)
-#endif
 {
   HAL_PCD_IRQHandler(&hpcd);
 }
@@ -226,11 +223,8 @@ void OTG_HS_IRQHandler(void)
   * @param  None
   * @retval None
   */
-#ifdef USE_USB_FS  
-void OTG_FS_WKUP_IRQHandler(void)
-#else  
+  
 void OTG_HS_WKUP_IRQHandler(void)
-#endif
 {
   if((&hpcd)->Init.low_power_enable)
   {
@@ -262,14 +256,9 @@ void OTG_HS_WKUP_IRQHandler(void)
     /* ungate PHY clock */
      __HAL_PCD_UNGATE_PHYCLOCK((&hpcd)); 
   }
-#ifdef USE_USB_FS
-  /* Clear EXTI pending Bit*/
-  __HAL_USB_FS_EXTI_CLEAR_FLAG();
-#else
+
     /* Clear EXTI pending Bit*/
   __HAL_USB_HS_EXTI_CLEAR_FLAG();
-#endif
-  
 }
 
 

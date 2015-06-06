@@ -45,9 +45,6 @@
 #include "ts_api_extends.h"
 #include "lcd_layout.h"
 
-//#include "st_logo1.h"
-//#include "st_logo2.h"
-
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
@@ -63,17 +60,7 @@
 LTDC_HandleTypeDef LtdcHandle;
 
 /* Private function prototypes -----------------------------------------------*/
-static void LCD_Config(void); 
 static void SystemClock_Config(void);
-static void Error_Handler(void);
-
-// FOR TESTS: 
-
-void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) ;
-void test_reg_func( TS_mouseInputTypeDef _state_, const Point * const _inData_ ) ;
-
-
-
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -83,23 +70,14 @@ void test_reg_func( TS_mouseInputTypeDef _state_, const Point * const _inData_ )
   * @retval None
   */
 	
-	static float xyz_buff[3];
-char buff_disp_xyz[30];
-float Xval, Yval, Zval = 0x00;
-	
 USBD_HandleTypeDef USBD_Device;
 extern PCD_HandleTypeDef hpcd;
 
 #define COMMENT 0
+
 int main(void)
 {
 	uint8_t status = 0 ;
-	TS_StateTypeDef touch_data ;
-	uint8_t uint16_txt[6] ;
-	
-  //uint32_t tobuttom = 0;
-  //uint32_t totop = 0;
-	
 
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, instruction and Data caches
@@ -112,42 +90,32 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-	if (BSP_GYRO_Init() != GYRO_OK) 
-		 BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"GYRO_ERROR", CENTER_MODE);
-		   /* Init Device Library */
+	/* Init l3gd20 gyroscope */
+	BSP_GYRO_Init();
+	BSP_GYRO_Reset();
+	
+	/* Init USB Device Library */
   USBD_Init(&USBD_Device, &HID_Desc, 0);
   
-  /* Add Supported Class */
+  /* Add USB Supported Class */
   USBD_RegisterClass(&USBD_Device, USBD_HID_CLASS);
   
-  /* Start Device Process */
+  /* Start USB Device Process */
 	USBD_Start(&USBD_Device);
-	 BSP_GYRO_Reset();
-	
+
   /* Configure LED3 */
   BSP_LED_Init(LED3);
 	BSP_LED_Init(LED4); 
- 
- /*##-1- LCD Configuration ##################################################*/ 
-  /* Configure 2 layers w/ Blending */
-  //LCD_Config(); 
-
 	BSP_LCD_Init();
 	lcd_prepLayers() ;
 		
-	
-	
 	// ######## TOUCH PANEL ############
   status = BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
 	if ( status == TS_OK ) {
 		
 		// Additional initialization ( interrupts and fifo threshold )
 		BSP_TS_Init_extends(TS_I2C_ADDRESS );
-		
-		// register new notify function
-		if ( 0 == TS_registerNotifyFunc( &test_reg_func ) )
-			BSP_LED_On( LED4 ) ;
-		
+
 		// register lcd notify function - for drawing action
 		if ( 0 == TS_registerNotifyFunc( &lcd_handleMouseNotify ) )
 			BSP_LED_On( LED4 ) ;
@@ -189,202 +157,6 @@ int main(void)
     
   }
 }
-
-void test_reg_func( TS_mouseInputTypeDef _state_ , const Point * const _inData_ ) {
-	
-	
-		switch ( _state_ )
-		{
-			case TS_MOUSE_LEFT : BSP_LED_On( LED4 ) ; break ;
-			case TS_MOUSE_RIGHT: BSP_LED_On( LED3 ) ; break ;
-			case TS_MOUSE_SLIDER_UP : BSP_LED_On( LED4 ) ; HAL_Delay(50); BSP_LED_Off( LED4 );	break ;
-			case TS_MOUSE_SLIDER_DOWN: BSP_LED_On( LED3 ); HAL_Delay(50); BSP_LED_Off( LED3 );  break ;
-			case TS_MOUSE_NONE : BSP_LED_Off( LED3 ) ; BSP_LED_Off( LED4 ); break ;
-		}
-		
-}
-
-
-void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) {
-	int8_t size = 0 ;
-	
-	if ( _val_ >= 10000 ) 
-		size = 4 ;
-	else if ( _val_ >= 1000 ) 
-		size = 3 ;
-	else if ( _val_ >= 100 )
-		size = 2 ;
-	else if ( _val_ >= 10 )
-		size = 1 ;
-	
-	// set '\0' at the end
-	ptr[size+1] = '\0' ;
-	
-	while ( size > 0 ) {
-		ptr[size] = (uint8_t)(_val_%10) + 0x30 ;
-		_val_ /= 10 ;
-		
-		--size ;
-	}
-	ptr[0] = (uint8_t)_val_ + 0x30 ;
-}
-
-/**
-  * @brief LCD Configuration.
-  * @note  This function Configure tha LTDC peripheral :
-  *        1) Configure the Pixel Clock for the LCD
-  *        2) Configure the LTDC Timing and Polarity
-  *        3) Configure the LTDC Layer 1 :
-  *           - direct color (RGB565) as pixel format  
-  *           - The frame buffer is located at FLASH memory
-  *           - The Layer size configuration : 240x160
-  *        4) Configure the LTDC Layer 2 :
-  *           - direct color (RGB565) as pixel format 
-  *           - The frame buffer is located at FLASH memory
-  *           - The Layer size configuration : 240x160                      
-  * @retval
-  *  None
-  */
-static void LCD_Config(void)
-{  
-  LTDC_LayerCfgTypeDef pLayerCfg;
-  LTDC_LayerCfgTypeDef pLayerCfg1;
-
-  /* Initializaton of ILI9341 component*/
-  ili9341_Init();
-  
-/* LTDC Initialization -------------------------------------------------------*/
-  
-  /* Polarity configuration */
-  /* Initialize the horizontal synchronization polarity as active low */
-  LtdcHandle.Init.HSPolarity = LTDC_HSPOLARITY_AL;
-  /* Initialize the vertical synchronization polarity as active low */ 
-  LtdcHandle.Init.VSPolarity = LTDC_VSPOLARITY_AL; 
-  /* Initialize the data enable polarity as active low */ 
-  LtdcHandle.Init.DEPolarity = LTDC_DEPOLARITY_AL; 
-  /* Initialize the pixel clock polarity as input pixel clock */  
-  LtdcHandle.Init.PCPolarity = LTDC_PCPOLARITY_IPC;
-  
-  /* Timing configuration  (Typical configuration from ILI9341 datasheet)
-      HSYNC=10 (9+1)
-      HBP=20 (29-10+1)
-      ActiveW=240 (269-20-10+1)
-      HFP=10 (279-240-20-10+1)
-
-      VSYNC=2 (1+1)
-      VBP=2 (3-2+1)
-      ActiveH=320 (323-2-2+1)
-      VFP=4 (327-320-2-2+1)
-  */  
-
-  /* Timing configuration */
-  /* Horizontal synchronization width = Hsync - 1 */  
-  LtdcHandle.Init.HorizontalSync = 9;
-  /* Vertical synchronization height = Vsync - 1 */
-  LtdcHandle.Init.VerticalSync = 1;
-  /* Accumulated horizontal back porch = Hsync + HBP - 1 */
-  LtdcHandle.Init.AccumulatedHBP = 29;
-  /* Accumulated vertical back porch = Vsync + VBP - 1 */
-  LtdcHandle.Init.AccumulatedVBP = 3; 
-  /* Accumulated active width = Hsync + HBP + Active Width - 1 */ 
-  LtdcHandle.Init.AccumulatedActiveH = 323;
-  /* Accumulated active height = Vsync + VBP + Active Heigh - 1 */
-  LtdcHandle.Init.AccumulatedActiveW = 269;
-  /* Total height = Vsync + VBP + Active Heigh + VFP - 1 */
-  LtdcHandle.Init.TotalHeigh = 327;
-  /* Total width = Hsync + HBP + Active Width + HFP - 1 */
-  LtdcHandle.Init.TotalWidth = 279;
-  
-  /* Configure R,G,B component values for LCD background color */
-  LtdcHandle.Init.Backcolor.Blue = 0;
-  LtdcHandle.Init.Backcolor.Green = 0;
-  LtdcHandle.Init.Backcolor.Red = 0;
-
-  LtdcHandle.Instance = LTDC;
-  
-/* Layer1 Configuration ------------------------------------------------------*/
-  
-  /* Windowing configuration */ 
-  pLayerCfg.WindowX0 = 0;
-  pLayerCfg.WindowX1 = 10;//240;
-  pLayerCfg.WindowY0 = 0;
-  pLayerCfg.WindowY1 = 10;//160;
-  
-  /* Pixel Format configuration*/ 
-  pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_RGB565;
-  
-  /* Start Address configuration : frame buffer is located at FLASH memory */
-  //pLayerCfg.FBStartAdress = (uint32_t)&ST_LOGO_1;
-  
-  /* Alpha constant (255 totally opaque) */
-  pLayerCfg.Alpha = 255;
-  
-  /* Default Color configuration (configure A,R,G,B component values) */
-  pLayerCfg.Alpha0 = 0;
-  pLayerCfg.Backcolor.Blue = 0;
-  pLayerCfg.Backcolor.Green = 0;
-  pLayerCfg.Backcolor.Red = 0;
-  
-  /* Configure blending factors */
-  pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_PAxCA;
-  pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_PAxCA;
-  
-  /* Configure the number of lines and number of pixels per line */
-  pLayerCfg.ImageWidth = 10; //240;
-  pLayerCfg.ImageHeight = 10; //160;
-
-/* Layer2 Configuration ------------------------------------------------------*/
-  
-  /* Windowing configuration */
-  pLayerCfg1.WindowX0 = 0;
-  pLayerCfg1.WindowX1 = 10;//240;
-  pLayerCfg1.WindowY0 = 160;
-  pLayerCfg1.WindowY1 = 170;//320;
-  
-  /* Pixel Format configuration*/ 
-  pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_RGB565;
-  
-  /* Start Address configuration : frame buffer is located at FLASH memory */
-  //pLayerCfg1.FBStartAdress = (uint32_t)&ST_LOGO_2;
-  
-  /* Alpha constant (255 totally opaque) */
-  pLayerCfg1.Alpha = 200;
-  
-  /* Default Color configuration (configure A,R,G,B component values) */
-  pLayerCfg1.Alpha0 = 0;
-  pLayerCfg1.Backcolor.Blue = 0;
-  pLayerCfg1.Backcolor.Green = 0;
-  pLayerCfg1.Backcolor.Red = 0;
-  
-  /* Configure blending factors */
-  pLayerCfg1.BlendingFactor1 = LTDC_BLENDING_FACTOR1_PAxCA;
-  pLayerCfg1.BlendingFactor2 = LTDC_BLENDING_FACTOR2_PAxCA;
-  
-  /* Configure the number of lines and number of pixels per line */
-  pLayerCfg1.ImageWidth = 10;//240;
-  pLayerCfg1.ImageHeight = 10;//160;  
-   
-  /* Configure the LTDC */  
-  if(HAL_LTDC_Init(&LtdcHandle) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler(); 
-  }
-
-  /* Configure the Background Layer*/
-  if(HAL_LTDC_ConfigLayer(&LtdcHandle, &pLayerCfg, 0) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler(); 
-  }
-  
-  /* Configure the Foreground Layer*/
-  if(HAL_LTDC_ConfigLayer(&LtdcHandle, &pLayerCfg1, 1) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler(); 
-  }  
-}  
 
 /**
   * @brief  System Clock Configuration
@@ -466,14 +238,6 @@ static void SystemClock_Config(void)
   * @param  None
   * @retval None
   */
-static void Error_Handler(void)
-{
-    /* Turn LED3 on */
-    BSP_LED_On(LED3);
-    while(1)
-    {
-    }
-}
 
 #ifdef  USE_FULL_ASSERT
 
