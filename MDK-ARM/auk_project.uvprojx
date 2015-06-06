@@ -170,12 +170,12 @@
             <UseExternalTool>0</UseExternalTool>
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
-            <Capability>0</Capability>
-            <DriverSelection>-1</DriverSelection>
+            <Capability>1</Capability>
+            <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -224,7 +224,7 @@
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <RoSelD>3</RoSelD>
@@ -363,9 +363,9 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define></Define>
+              <Define>USE_HAL_DRIVER,STM32F429xx,USE_USB_HS_IN_FS,USE_USB_HS</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Application_Inc;..\BSP_Drivers;..\BSP_STM32F429I_DISCO_LIBs;..\CMSIS\Include;..\STM32F4xx_HAL_Drivers\Inc;..\BSP_STM32F429I_DISCO_LIBs\Fonts</IncludePath>
+              <IncludePath>..\Application_Inc;..\BSP_Drivers;..\BSP_STM32F429I_DISCO_LIBs;..\CMSIS\Include;..\STM32F4xx_HAL_Drivers\Inc;..\BSP_STM32F429I_DISCO_LIBs\Fonts;..\STM32_USB_Device_Library\Class\HID\Inc;..\STM32_USB_Device_Library\Core\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -386,7 +386,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>0</umfTarg>
+            <umfTarg>1</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -398,7 +398,7 @@
             <ScatterFile></ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc></Misc>
+            <Misc>--diag_suppress=L6329</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -423,6 +423,31 @@
               <FileType>1</FileType>
               <FilePath>..\Application_Src\stm32f4xx_it.c</FilePath>
             </File>
+            <File>
+              <FileName>ts_api_extends.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application_Src\ts_api_extends.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_conf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application_Src\usbd_conf.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application_Src\usbd_desc.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd_layout.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application_Src\lcd_layout.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mouse_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application_Src\usb_mouse_api.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -437,6 +462,11 @@
               <FileName>stmpe811.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\BSP_Drivers\stmpe811.c</FilePath>
+            </File>
+            <File>
+              <FileName>l3gd20.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BSP_Drivers\l3gd20.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -462,6 +492,11 @@
               <FileName>stm32f429i_discovery_ts.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\BSP_STM32F429I_DISCO_LIBs\stm32f429i_discovery_ts.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f429i_discovery_gyroscope.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BSP_STM32F429I_DISCO_LIBs\stm32f429i_discovery_gyroscope.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -592,6 +627,31 @@
               <FileName>stm32f4xx_ll_usb.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\STM32F4xx_HAL_Drivers\Src\stm32f4xx_ll_usb.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>STM32_USBD_Library</GroupName>
+          <Files>
+            <File>
+              <FileName>usbd_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32_USB_Device_Library\Core\Src\usbd_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ctlreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ioreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32_USB_Device_Library\Core\Src\usbd_ioreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_hid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32_USB_Device_Library\Class\HID\Src\usbd_hid.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -1,10 +1,11 @@
 /**
   ******************************************************************************
-  * @file    LTDC/LTDC_Display_2Layers/Inc/main.h 
+  * @file    stm32f429i_discovery_gyroscope.h
   * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    26-June-2014
-  * @brief   Header for main.c module
+  * @version V2.1.0
+  * @date    19-June-2014
+  * @brief   This file contains definitions for stm32f429i_discovery_gyroscope.c 
+  *          firmware driver.
   ******************************************************************************
   * @attention
   *
@@ -36,37 +37,89 @@
   */
   
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __STM32F429I_DISCOVERY_GYROSCOPE_H
+#define __STM32F429I_DISCOVERY_GYROSCOPE_H
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stdio.h"
-#include "stdint.h"
-#include <signal.h>
-
-#include "stm32f429xx.h"
-#include "stm32f4xx.h"
-#include "stm32f4xx_hal.h"
 #include "stm32f429i_discovery.h"
+/* Include Gyroscope component driver */
+#include "l3gd20.h"
 
-#include "ili9341.h"
-#include "stm32f429i_discovery_lcd.h"
+/** @addtogroup BSP
+  * @{
+  */
+  
+/** @addtogroup STM32F429I_DISCOVERY
+  * @{
+  */ 
 
-#include "usbd_core.h"
-#include "usbd_desc.h"
-#include "usbd_hid.h" 
+/** @addtogroup STM32F429I_DISCOVERY_GYROSCOPE
+  * @{
+  */
+  
+/** @defgroup STM32F429I_DISCOVERY_GYROSCOPE_Exported_Types
+  * @{
+  */
+typedef enum 
+{
+  GYRO_OK = 0,
+  GYRO_ERROR = 1,
+  GYRO_TIMEOUT = 2
+}GYRO_StatusTypeDef;
+/**
+  * @}
+  */
+  
+/** @defgroup STM32F429I_DISCOVERY_GYROSCOPE_Exported_Constants
+  * @{
+  */
+/**
+  * @}
+  */
 
-#include "stm32f429i_discovery_ts.h"
-#include "ts_api_extends.h"
+/** @defgroup STM32F429I_DISCOVERY_GYROSCOPE_Exported_Macros
+  * @{
+  */
+/**
+  * @}
+  */
+ 
+/** @defgroup STM32F429I_DISCOVERY_GYROSCOPE_Exported_Functions
+  * @{
+  */
+/* Gyroscope Functions */ 
+uint8_t BSP_GYRO_Init(void);
+void    BSP_GYRO_Reset(void);
+uint8_t BSP_GYRO_ReadID(void);
+void    BSP_GYRO_ITConfig(GYRO_InterruptConfigTypeDef *pIntConfigStruct);
+void    BSP_GYRO_EnableIT(uint8_t IntPin);
+void    BSP_GYRO_DisableIT(uint8_t IntPin);
+void    BSP_GYRO_GetXYZ(float* pfData);
 
+/**
+  * @}
+  */
 
-#include "stm32f429i_discovery_gyroscope.h"
+/**
+  * @}
+  */ 
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+/**
+  * @}
+  */ 
 
-#endif /* __MAIN_H */
+/**
+  * @}
+  */ 
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __STM32F429I_DISCOVERY_GYROSCOPE_H */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/ 

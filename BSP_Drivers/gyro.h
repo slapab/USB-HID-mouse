@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    LTDC/LTDC_Display_2Layers/Inc/main.h 
+  * @file    gyro.c
   * @author  MCD Application Team
   * @version V1.1.0
-  * @date    26-June-2014
-  * @brief   Header for main.c module
+  * @date    21-March-2014
+  * @brief   This header file contains the functions prototypes for the gyroscope driver.
   ******************************************************************************
   * @attention
   *
@@ -35,38 +35,96 @@
   ******************************************************************************
   */
   
+
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __GYRO_H
+#define __GIRO_H
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stdio.h"
-#include "stdint.h"
-#include <signal.h>
+#include <stdint.h>
 
-#include "stm32f429xx.h"
-#include "stm32f4xx.h"
-#include "stm32f4xx_hal.h"
-#include "stm32f429i_discovery.h"
+/** @addtogroup BSP
+  * @{
+  */
 
-#include "ili9341.h"
-#include "stm32f429i_discovery_lcd.h"
+/** @addtogroup Components
+  * @{
+  */
+    
+/** @addtogroup GYRO
+  * @{
+  */
 
-#include "usbd_core.h"
-#include "usbd_desc.h"
-#include "usbd_hid.h" 
+/** @defgroup GYRO_Exported_Types
+  * @{
+  */
+/** 
+  * @brief  Gyroscope driver structure definition  
+  */ 
+typedef struct
+{  
+  void       (*Init)(uint16_t);
+  uint8_t    (*ReadID)(void);
+  void       (*Reset)(void);
+  void       (*ConfigIT)(uint16_t); 
+  void       (*EnableIT)(uint8_t);
+  void       (*DisableIT)(uint8_t);  
+  uint8_t    (*ITStatus)(uint16_t, uint16_t);   
+  void       (*ClearIT)(uint16_t, uint16_t); 
+  void       (*FilterConfig)(uint8_t);  
+  void       (*FilterCmd)(uint8_t);  
+  void       (*GetXYZ)(float *);
+}GYRO_DrvTypeDef;
 
-#include "stm32f429i_discovery_ts.h"
-#include "ts_api_extends.h"
+typedef struct
+{
+  uint8_t Power_Mode;                         /* Power-down/Sleep/Normal Mode */
+  uint8_t Output_DataRate;                    /* OUT data rate */
+  uint8_t Axes_Enable;                        /* Axes enable */
+  uint8_t Band_Width;                         /* Bandwidth selection */
+  uint8_t BlockData_Update;                   /* Block Data Update */
+  uint8_t Endianness;                         /* Endian Data selection */
+  uint8_t Full_Scale;                         /* Full Scale selection */
+}GYRO_InitTypeDef;
 
+/* GYRO High Pass Filter struct */
+typedef struct
+{
+  uint8_t HighPassFilter_Mode_Selection;      /* Internal filter mode */
+  uint8_t HighPassFilter_CutOff_Frequency;    /* High pass filter cut-off frequency */
+}GYRO_FilterConfigTypeDef;
 
-#include "stm32f429i_discovery_gyroscope.h"
+/*GYRO Interrupt struct */
+typedef struct
+{
+  uint8_t Latch_Request;                      /* Latch interrupt request into CLICK_SRC register */
+  uint8_t Interrupt_Axes;                     /* X, Y, Z Axes Interrupts */ 
+  uint8_t Interrupt_ActiveEdge;               /*  Interrupt Active edge */
+}GYRO_InterruptConfigTypeDef;  
+/**
+  * @}
+  */
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+/**
+  * @}
+  */
 
-#endif /* __MAIN_H */
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __GYRO_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

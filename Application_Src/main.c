@@ -42,8 +42,10 @@
 #include "stm32f4xx.h"
 #include "main.h"
 
-//#include "st_logo1.h"
-//#include "st_logo2.h"
+#include "ts_api_extends.h"
+#include "lcd_layout.h"
+#include "usb_mouse_api.h"
+
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -58,12 +60,14 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 LTDC_HandleTypeDef LtdcHandle;
+USBD_HandleTypeDef USBD_Device;
+extern PCD_HandleTypeDef hpcd;
 
 /* Private function prototypes -----------------------------------------------*/
-static void LCD_Config(void); 
 static void SystemClock_Config(void);
-static void Error_Handler(void);
-void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) ;
+
+void test_reg_func( TS_mouseInputTypeDef _state_, const Point * const _inData_ ) ;
+
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -71,16 +75,13 @@ void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) ;
   * @param  None
   * @retval None
   */
+
+
 #define COMMENT 0
+
 int main(void)
 {
 	uint8_t status = 0 ;
-	TS_StateTypeDef touch_data ;
-	uint8_t uint16_txt[6] ;
-	
-  //uint32_t tobuttom = 0;
-  //uint32_t totop = 0;
-	
 
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, instruction and Data caches
@@ -93,112 +94,55 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+	/* Init l3gd20 gyroscope */
+	BSP_GYRO_Init();
+	BSP_GYRO_Reset();
+	
+	/* Init USB Device Library */
+  USBD_Init(&USBD_Device, &HID_Desc, 0);
+  
+  /* Add USB Supported Class */
+  USBD_RegisterClass(&USBD_Device, USBD_HID_CLASS);
+  
+  /* Start USB Device Process */
+	USBD_Start(&USBD_Device);
+
   /* Configure LED3 */
-  BSP_LED_Init(LED3);   
-  
-  /*##-1- LCD Configuration ##################################################*/ 
-  /* Configure 2 layers w/ Blending */
-  //LCD_Config(); 
-
+  BSP_LED_Init(LED3);
+	BSP_LED_Init(LED4); 
 	BSP_LCD_Init();
-	
-	
-	//BSP_LCD_SetLayerAddress( LCD_BACKGROUND_LAYER, LCD_FRAME_BUFFER );
-	//BSP_LCD_SetLayerAddress( LCD_FOREGROUND_LAYER, LCD_FRAME_BUFFER+BUFFER_OFFSET );
-	// Init LCD buffers for layers
-	BSP_LCD_LayerDefaultInit(LCD_BACKGROUND_LAYER, LCD_FRAME_BUFFER);
-	BSP_LCD_LayerDefaultInit(LCD_FOREGROUND_LAYER, LCD_FRAME_BUFFER+BUFFER_OFFSET);
-	// Enable Foreground Layer
-	BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, ENABLE);
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, DISABLE);
-	
-	// Select Foreground Layer
-	BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
-	BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
-
-	/* Clear the LCD */ 
-  BSP_LCD_SetBackColor(LCD_COLOR_WHITE); 
-  BSP_LCD_Clear(LCD_COLOR_LIGHTBLUE);
-  
-  /* Set the LCD Text Color */
-  BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
-  
-  /* Display LCD messages */
-  BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"STM32F429I BSP", CENTER_MODE);
-	
-	
-	//############# 2 warstawa - test
-	
-	// Select Background Layer
-	BSP_LCD_SelectLayer(LCD_BACKGROUND_LAYER);
-	
-	/* Clear the LCD */ 
-  BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGREEN); 
-  BSP_LCD_Clear(LCD_COLOR_LIGHTBLUE);
-	
-	
-	BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
-  BSP_LCD_SetFont(&Font16);
-  BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
-	
-	BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
-	Point some_poly[5] = { { 0, 100}, {10, 120}, { 15, 135} , {75, 105}, {85, 85} } ;
-	BSP_LCD_DrawPolygon( &some_poly[0], 5 ) ;
-	BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
-	BSP_LCD_FillPolygon( &some_poly[0], 5 );
-	
-	
+	//lcd_prepLayers() ;
+		
 	// ######## TOUCH PANEL ############
   status = BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
 	if ( status == TS_OK ) {
-		BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
-		BSP_LCD_DisplayStringAt(0, 40, (uint8_t*)"TS activated", CENTER_MODE);
 		
-		while( 1 ) {
-			BSP_TS_GetState( &touch_data ) ;
-			if( touch_data.TouchDetected ) {
-				
-				uint16toASCII( touch_data.X, &uint16_txt[0] ) ;
-				//BSP_LCD_DisplayStringAt(0, 80, &uint16_txt[0], CENTER_MODE);
-				BSP_LCD_ClearStringLine( 5 ) ;
-				BSP_LCD_DisplayStringAtLine( 5 , &uint16_txt[0] ) ;
-				uint16toASCII( touch_data.Y, &uint16_txt[0] ) ;
-				//BSP_LCD_DisplayStringAt(0, 100, &uint16_txt[0], CENTER_MODE);
-				BSP_LCD_ClearStringLine( 6 ) ;
-				BSP_LCD_DisplayStringAtLine( 6 , &uint16_txt[0] ) ;
-			}
-		}
-	}
-	/*
-	HAL_Delay(1000);
-	
-	BSP_LCD_SetTransparency( LCD_FOREGROUND_LAYER , 100 );
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
-	
-	HAL_Delay(2000 ) ;
-	
-	// Turn Off Foreground Layer
-	BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, DISABLE);
-	
-	HAL_Delay(1000) ;
+		// Additional initialization ( interrupts and fifo threshold )
+		BSP_TS_Init_extends(TS_I2C_ADDRESS );
 
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
+		// register lcd notify function - for drawing action
+		if ( 0 == TS_registerNotifyFunc( &lcd_handleMouseNotify ) )
+			BSP_LED_On( LED4 ) ;
+		
+		// register usb notify handle function
+		if ( 0 == TS_registerNotifyFunc(&usb_handleMouseNotify) ) {
+			BSP_LED_On( LED4 ) ;
+		}
+		
+		// register new notify function
+		if ( 0 == TS_registerNotifyFunc( &test_reg_func ) )
+			BSP_LED_On( LED4 ) ;
+		
+	}
 	
-	HAL_Delay(1000) ;
-	
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, DISABLE);
-	*/
   while (1)
   {
-		HAL_Delay(1500) ;
-		BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
-		BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, DISABLE);
-		HAL_Delay(1500) ;
-		BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, ENABLE);
-		BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, DISABLE);
 		
+		TS_checkEvent( TS_I2C_ADDRESS ) ;
+		usb_checkPoolInterval() ;
+		//lcd_drawAction() ;
 		
-		
+
 		
 		
 		
@@ -228,188 +172,19 @@ int main(void)
   }
 }
 
-
-
-void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) {
-	int8_t size = 0 ;
+void test_reg_func( TS_mouseInputTypeDef _state_ , const Point * const _inData_ ) {
 	
-	if ( _val_ >= 10000 ) 
-		size = 4 ;
-	else if ( _val_ >= 1000 ) 
-		size = 3 ;
-	else if ( _val_ >= 100 )
-		size = 2 ;
-	else if ( _val_ >= 10 )
-		size = 1 ;
 	
-	// set '\0' at the end
-	ptr[size+1] = '\0' ;
-	
-	while ( size > 0 ) {
-		ptr[size] = (uint8_t)(_val_%10) + 0x30 ;
-		_val_ /= 10 ;
+		switch ( _state_ )
+		{
+			case TS_MOUSE_LEFT : BSP_LED_On( LED4 ) ; break ;
+			case TS_MOUSE_RIGHT: BSP_LED_On( LED3 ) ; break ;
+			case TS_MOUSE_SLIDER_UP : BSP_LED_On( LED4 ) ; HAL_Delay(10); BSP_LED_Off( LED4 );	break ;
+			case TS_MOUSE_SLIDER_DOWN: BSP_LED_On( LED3 ); HAL_Delay(10); BSP_LED_Off( LED3 );  break ;
+			case TS_MOUSE_NONE : BSP_LED_Off( LED3 ) ; BSP_LED_Off( LED4 ); break ;
+		}
 		
-		--size ;
-	}
-	ptr[0] = (uint8_t)_val_ + 0x30 ;
 }
-
-/**
-  * @brief LCD Configuration.
-  * @note  This function Configure tha LTDC peripheral :
-  *        1) Configure the Pixel Clock for the LCD
-  *        2) Configure the LTDC Timing and Polarity
-  *        3) Configure the LTDC Layer 1 :
-  *           - direct color (RGB565) as pixel format  
-  *           - The frame buffer is located at FLASH memory
-  *           - The Layer size configuration : 240x160
-  *        4) Configure the LTDC Layer 2 :
-  *           - direct color (RGB565) as pixel format 
-  *           - The frame buffer is located at FLASH memory
-  *           - The Layer size configuration : 240x160                      
-  * @retval
-  *  None
-  */
-static void LCD_Config(void)
-{  
-  LTDC_LayerCfgTypeDef pLayerCfg;
-  LTDC_LayerCfgTypeDef pLayerCfg1;
-
-  /* Initializaton of ILI9341 component*/
-  ili9341_Init();
-  
-/* LTDC Initialization -------------------------------------------------------*/
-  
-  /* Polarity configuration */
-  /* Initialize the horizontal synchronization polarity as active low */
-  LtdcHandle.Init.HSPolarity = LTDC_HSPOLARITY_AL;
-  /* Initialize the vertical synchronization polarity as active low */ 
-  LtdcHandle.Init.VSPolarity = LTDC_VSPOLARITY_AL; 
-  /* Initialize the data enable polarity as active low */ 
-  LtdcHandle.Init.DEPolarity = LTDC_DEPOLARITY_AL; 
-  /* Initialize the pixel clock polarity as input pixel clock */  
-  LtdcHandle.Init.PCPolarity = LTDC_PCPOLARITY_IPC;
-  
-  /* Timing configuration  (Typical configuration from ILI9341 datasheet)
-      HSYNC=10 (9+1)
-      HBP=20 (29-10+1)
-      ActiveW=240 (269-20-10+1)
-      HFP=10 (279-240-20-10+1)
-
-      VSYNC=2 (1+1)
-      VBP=2 (3-2+1)
-      ActiveH=320 (323-2-2+1)
-      VFP=4 (327-320-2-2+1)
-  */  
-
-  /* Timing configuration */
-  /* Horizontal synchronization width = Hsync - 1 */  
-  LtdcHandle.Init.HorizontalSync = 9;
-  /* Vertical synchronization height = Vsync - 1 */
-  LtdcHandle.Init.VerticalSync = 1;
-  /* Accumulated horizontal back porch = Hsync + HBP - 1 */
-  LtdcHandle.Init.AccumulatedHBP = 29;
-  /* Accumulated vertical back porch = Vsync + VBP - 1 */
-  LtdcHandle.Init.AccumulatedVBP = 3; 
-  /* Accumulated active width = Hsync + HBP + Active Width - 1 */ 
-  LtdcHandle.Init.AccumulatedActiveH = 323;
-  /* Accumulated active height = Vsync + VBP + Active Heigh - 1 */
-  LtdcHandle.Init.AccumulatedActiveW = 269;
-  /* Total height = Vsync + VBP + Active Heigh + VFP - 1 */
-  LtdcHandle.Init.TotalHeigh = 327;
-  /* Total width = Hsync + HBP + Active Width + HFP - 1 */
-  LtdcHandle.Init.TotalWidth = 279;
-  
-  /* Configure R,G,B component values for LCD background color */
-  LtdcHandle.Init.Backcolor.Blue = 0;
-  LtdcHandle.Init.Backcolor.Green = 0;
-  LtdcHandle.Init.Backcolor.Red = 0;
-
-  LtdcHandle.Instance = LTDC;
-  
-/* Layer1 Configuration ------------------------------------------------------*/
-  
-  /* Windowing configuration */ 
-  pLayerCfg.WindowX0 = 0;
-  pLayerCfg.WindowX1 = 10;//240;
-  pLayerCfg.WindowY0 = 0;
-  pLayerCfg.WindowY1 = 10;//160;
-  
-  /* Pixel Format configuration*/ 
-  pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_RGB565;
-  
-  /* Start Address configuration : frame buffer is located at FLASH memory */
-  //pLayerCfg.FBStartAdress = (uint32_t)&ST_LOGO_1;
-  
-  /* Alpha constant (255 totally opaque) */
-  pLayerCfg.Alpha = 255;
-  
-  /* Default Color configuration (configure A,R,G,B component values) */
-  pLayerCfg.Alpha0 = 0;
-  pLayerCfg.Backcolor.Blue = 0;
-  pLayerCfg.Backcolor.Green = 0;
-  pLayerCfg.Backcolor.Red = 0;
-  
-  /* Configure blending factors */
-  pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_PAxCA;
-  pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_PAxCA;
-  
-  /* Configure the number of lines and number of pixels per line */
-  pLayerCfg.ImageWidth = 10; //240;
-  pLayerCfg.ImageHeight = 10; //160;
-
-/* Layer2 Configuration ------------------------------------------------------*/
-  
-  /* Windowing configuration */
-  pLayerCfg1.WindowX0 = 0;
-  pLayerCfg1.WindowX1 = 10;//240;
-  pLayerCfg1.WindowY0 = 160;
-  pLayerCfg1.WindowY1 = 170;//320;
-  
-  /* Pixel Format configuration*/ 
-  pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_RGB565;
-  
-  /* Start Address configuration : frame buffer is located at FLASH memory */
-  //pLayerCfg1.FBStartAdress = (uint32_t)&ST_LOGO_2;
-  
-  /* Alpha constant (255 totally opaque) */
-  pLayerCfg1.Alpha = 200;
-  
-  /* Default Color configuration (configure A,R,G,B component values) */
-  pLayerCfg1.Alpha0 = 0;
-  pLayerCfg1.Backcolor.Blue = 0;
-  pLayerCfg1.Backcolor.Green = 0;
-  pLayerCfg1.Backcolor.Red = 0;
-  
-  /* Configure blending factors */
-  pLayerCfg1.BlendingFactor1 = LTDC_BLENDING_FACTOR1_PAxCA;
-  pLayerCfg1.BlendingFactor2 = LTDC_BLENDING_FACTOR2_PAxCA;
-  
-  /* Configure the number of lines and number of pixels per line */
-  pLayerCfg1.ImageWidth = 10;//240;
-  pLayerCfg1.ImageHeight = 10;//160;  
-   
-  /* Configure the LTDC */  
-  if(HAL_LTDC_Init(&LtdcHandle) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler(); 
-  }
-
-  /* Configure the Background Layer*/
-  if(HAL_LTDC_ConfigLayer(&LtdcHandle, &pLayerCfg, 0) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler(); 
-  }
-  
-  /* Configure the Foreground Layer*/
-  if(HAL_LTDC_ConfigLayer(&LtdcHandle, &pLayerCfg1, 1) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler(); 
-  }  
-}  
 
 /**
   * @brief  System Clock Configuration
@@ -456,7 +231,7 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 360;
+  RCC_OscInitStruct.PLL.PLLN = 336;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 7;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
@@ -491,14 +266,6 @@ static void SystemClock_Config(void)
   * @param  None
   * @retval None
   */
-static void Error_Handler(void)
-{
-    /* Turn LED3 on */
-    BSP_LED_On(LED3);
-    while(1)
-    {
-    }
-}
 
 #ifdef  USE_FULL_ASSERT
 
