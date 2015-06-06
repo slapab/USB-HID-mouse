@@ -183,16 +183,27 @@
           <Type>0</Type>
           <LineNumber>202</LineNumber>
           <EnabledFlag>1</EnabledFlag>
+<<<<<<< HEAD
           <Address>0</Address>
+=======
+          <Address>134242486</Address>
+>>>>>>> 19cdaf390e915d7b1f2b91007cfa63b355802249
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
+<<<<<<< HEAD
           <BreakIfRCount>0</BreakIfRCount>
           <Filename>..\Application_Src\stm32f4xx_it.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression></Expression>
+=======
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\Application_Src\stm32f4xx_it.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\auk_project\../Application_Src/stm32f4xx_it.c\202</Expression>
+>>>>>>> 19cdaf390e915d7b1f2b91007cfa63b355802249
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -283,7 +294,7 @@
       <GroupNumber>1</GroupNumber>
       <FileNumber>1</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
