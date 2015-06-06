@@ -438,6 +438,11 @@
               <FileType>1</FileType>
               <FilePath>..\Application_Src\usbd_desc.c</FilePath>
             </File>
+            <File>
+              <FileName>lcd_layout.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application_Src\lcd_layout.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

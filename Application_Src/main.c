@@ -43,7 +43,7 @@
 #include "main.h"
 
 #include "ts_api_extends.h"
-
+#include "lcd_layout.h"
 
 //#include "st_logo1.h"
 //#include "st_logo2.h"
@@ -66,7 +66,15 @@ LTDC_HandleTypeDef LtdcHandle;
 static void LCD_Config(void); 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
+
+// FOR TESTS: 
+
 void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) ;
+void test_reg_func( TS_mouseInputTypeDef _state_, const Point * const _inData_ ) ;
+
+
+
+
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -74,15 +82,15 @@ void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) ;
   * @param  None
   * @retval None
   */
-#define COMMENT 0
-
-static float xyz_buff[3];
+	
+	static float xyz_buff[3];
 char buff_disp_xyz[30];
 float Xval, Yval, Zval = 0x00;
 	
 USBD_HandleTypeDef USBD_Device;
 extern PCD_HandleTypeDef hpcd;
-	
+
+#define COMMENT 0
 int main(void)
 {
 	uint8_t status = 0 ;
@@ -103,8 +111,8 @@ int main(void)
   
   /* Configure the system clock */
   SystemClock_Config();
-	
-	 if (BSP_GYRO_Init() != GYRO_OK) 
+
+	if (BSP_GYRO_Init() != GYRO_OK) 
 		 BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"GYRO_ERROR", CENTER_MODE);
 		   /* Init Device Library */
   USBD_Init(&USBD_Device, &HID_Desc, 0);
@@ -113,154 +121,46 @@ int main(void)
   USBD_RegisterClass(&USBD_Device, USBD_HID_CLASS);
   
   /* Start Device Process */
- USBD_Start(&USBD_Device);
+	USBD_Start(&USBD_Device);
 	 BSP_GYRO_Reset();
-
-
+	
   /* Configure LED3 */
-  BSP_LED_Init(LED3);   
-  
-  /*##-1- LCD Configuration ##################################################*/ 
+  BSP_LED_Init(LED3);
+	BSP_LED_Init(LED4); 
+ 
+ /*##-1- LCD Configuration ##################################################*/ 
   /* Configure 2 layers w/ Blending */
   //LCD_Config(); 
 
 	BSP_LCD_Init();
-	
-
-	//BSP_LCD_SetLayerAddress( LCD_BACKGROUND_LAYER, LCD_FRAME_BUFFER );
-	//BSP_LCD_SetLayerAddress( LCD_FOREGROUND_LAYER, LCD_FRAME_BUFFER+BUFFER_OFFSET );
-	// Init LCD buffers for layers
-	BSP_LCD_LayerDefaultInit(LCD_BACKGROUND_LAYER, LCD_FRAME_BUFFER);
-	BSP_LCD_LayerDefaultInit(LCD_FOREGROUND_LAYER, LCD_FRAME_BUFFER+BUFFER_OFFSET);
-	// Enable Foreground Layer
-	BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, ENABLE);
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, DISABLE);
-	
-	// Select Foreground Layer
-	BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
-	BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
-
-	/* Clear the LCD */ 
-  BSP_LCD_SetBackColor(LCD_COLOR_WHITE); 
-  BSP_LCD_Clear(LCD_COLOR_LIGHTBLUE);
-  
-  /* Set the LCD Text Color */
-  BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
-  
-  /* Display LCD messages */
-	
-	
-  //BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"STM32F429I BSP", CENTER_MODE);
-	/* Read Gyro Angular data */
-   // BSP_GYRO_GetXYZ(xyz_buff);
-    
-    /* Update autoreload and capture compare registers value */
-  /*  Xval = xyz_buff[0];
-    Yval = xyz_buff[1]; 
-    Zval = xyz_buff[2]; 
+	lcd_prepLayers() ;
 		
-		snprintf(buff_disp_xyz, 28, "x: %d y:%d z:%d", (int32_t)Xval, (int32_t)Yval, (int32_t)Zval);
-		BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)buff_disp_xyz, LEFT_MODE);*/
-	
-	//############# 2 warstawa - test
-	
-	// Select Background Layer
-	//BSP_LCD_SelectLayer(LCD_BACKGROUND_LAYER);
-	
-	/* Clear the LCD */ 
-  //BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGREEN); 
- // BSP_LCD_Clear(LCD_COLOR_LIGHTBLUE);
-	
-	
-//	BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
- // BSP_LCD_SetFont(&Font16);
- // BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
-	
-	//BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
-//	Point some_poly[5] = { { 0, 100}, {10, 120}, { 15, 135} , {75, 105}, {85, 85} } ;
-//	BSP_LCD_DrawPolygon( &some_poly[0], 5 ) ;
-//	BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
-//	BSP_LCD_FillPolygon( &some_poly[0], 5 );
 	
 	
 	// ######## TOUCH PANEL ############
- // status = BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
-	//if ( status == TS_OK ) {
+  status = BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
+	if ( status == TS_OK ) {
 		
-		// Additional initialization ( interrupts and fifo threshol )
-	//	BSP_TS_Init_extends(TS_I2C_ADDRESS, 10 );
+		// Additional initialization ( interrupts and fifo threshold )
+		BSP_TS_Init_extends(TS_I2C_ADDRESS );
 		
-		/*
-		BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
-		BSP_LCD_DisplayStringAt(0, 40, (uint8_t*)"TS activated", CENTER_MODE);
+		// register new notify function
+		if ( 0 == TS_registerNotifyFunc( &test_reg_func ) )
+			BSP_LED_On( LED4 ) ;
 		
-		while( 1 ) {
-			BSP_TS_GetState( &touch_data ) ;
-			if( touch_data.TouchDetected ) {
-				
-				uint16toASCII( touch_data.X, &uint16_txt[0] ) ;
-				//BSP_LCD_DisplayStringAt(0, 80, &uint16_txt[0], CENTER_MODE);
-				BSP_LCD_ClearStringLine( 5 ) ;
-				BSP_LCD_DisplayStringAtLine( 5 , &uint16_txt[0] ) ;
-				uint16toASCII( touch_data.Y, &uint16_txt[0] ) ;
-				//BSP_LCD_DisplayStringAt(0, 100, &uint16_txt[0], CENTER_MODE);
-				BSP_LCD_ClearStringLine( 6 ) ;
-				BSP_LCD_DisplayStringAtLine( 6 , &uint16_txt[0] ) ;
-			}
-		}
-		*/
-	//}
-	/*
-	HAL_Delay(1000);
+		// register lcd notify function - for drawing action
+		if ( 0 == TS_registerNotifyFunc( &lcd_handleMouseNotify ) )
+			BSP_LED_On( LED4 ) ;
+		
+	}
 	
-	BSP_LCD_SetTransparency( LCD_FOREGROUND_LAYER , 100 );
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
-	
-	HAL_Delay(2000 ) ;
-	
-	// Turn Off Foreground Layer
-	BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, DISABLE);
-	
-	HAL_Delay(1000) ;
-
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
-	
-	HAL_Delay(1000) ;
-	
-	BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, DISABLE);
-	*/
-	
-
-
   while (1)
   {
 		
-// BSP_GYRO_Reset();
-	//	HAL_Delay(700) ;
-		 /* Read Gyro Angular data */
-  //  BSP_GYRO_GetXYZ(xyz_buff);
-    
-    /* Update autoreload and capture compare registers value */
-   // Xval = xyz_buff[0];
-   // Yval = xyz_buff[1]; 
-   // Zval = xyz_buff[2]; 
+		TS_checkEvent( TS_I2C_ADDRESS ) ;
+		lcd_drawAction() ;
 		
-		//snprintf(buff_disp_xyz, 28, "x: %1.2f y:%1.2f z:%1.2f", Xval, Yval, Zval);
-		//BSP_LCD_DisplayStringAt(0, 50, (uint8_t*)buff_disp_xyz, CENTER_MODE);
-		
-	//	TS_checkEvent( TS_I2C_ADDRESS ) ;
-	//	snprintf(buff_disp_xyz, 28, "x: %f y:%f ", xyz_buff[0], xyz_buff[1]);
-	//	BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)buff_disp_xyz, LEFT_MODE);
-		
-	//	HAL_Delay(700) ;
-		/*BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
-		BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, DISABLE);
-		HAL_Delay(1500) ;
-		BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, ENABLE);
-		BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, DISABLE);
-		*/
-		
-		
+
 		
 		
 		
@@ -285,12 +185,24 @@ int main(void)
       HAL_Delay(50);
     }
     HAL_Delay(500);
-
-    #endif
-  } 
-
+		#endif
+    
+  }
 }
 
+void test_reg_func( TS_mouseInputTypeDef _state_ , const Point * const _inData_ ) {
+	
+	
+		switch ( _state_ )
+		{
+			case TS_MOUSE_LEFT : BSP_LED_On( LED4 ) ; break ;
+			case TS_MOUSE_RIGHT: BSP_LED_On( LED3 ) ; break ;
+			case TS_MOUSE_SLIDER_UP : BSP_LED_On( LED4 ) ; HAL_Delay(50); BSP_LED_Off( LED4 );	break ;
+			case TS_MOUSE_SLIDER_DOWN: BSP_LED_On( LED3 ); HAL_Delay(50); BSP_LED_Off( LED3 );  break ;
+			case TS_MOUSE_NONE : BSP_LED_Off( LED3 ) ; BSP_LED_Off( LED4 ); break ;
+		}
+		
+}
 
 
 void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) {

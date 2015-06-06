@@ -41,9 +41,17 @@
 #include "main.h"
 #include "stm32f4xx_it.h"
 
+/////////////////////////////////// LCD /////////////////////////////////
 // From ts_api_extends.c
 extern volatile sig_atomic_t ts_int_catched ;
 
+// From ts_api_extends.c
+extern volatile sig_atomic_t ts_buttons_delay ;
+extern volatile sig_atomic_t ts_mouse_last_signal_delay ;
+extern volatile sig_atomic_t ts_slider_hop_time ;
+////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////// USB ///////////////////////////////
 extern PCD_HandleTypeDef hpcd;
 uint8_t HID_Buffer[4];
 extern USBD_HandleTypeDef USBD_Device;
@@ -53,6 +61,7 @@ static float xyz_buff[3];
 
 #define CURSOR_STEP     5
 #define ABS(x) (((x) > 0) ? (x) : (-x))
+//////////////////////////////////////////////////////////////////////
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
@@ -170,6 +179,12 @@ void SysTick_Handler (void)
   static __IO uint32_t counter=0;
   HAL_IncTick();
   
+	// For touch driver purposes
+	++ts_buttons_delay ;
+	++ts_mouse_last_signal_delay ;
+	if (ts_slider_hop_time > 0 )
+		++ts_slider_hop_time ;
+	
   /* check Joystick state every polling interval (10ms) */
   if (counter++ == USBD_HID_GetPollingInterval(&USBD_Device))
   {  
@@ -275,11 +290,11 @@ static void GetPointerData(uint8_t *pbuf)
 		}
 	else if (ABS(xyz_buff[0]) < ABS(xyz_buff[1])) {
 		if (xyz_buff[1] > 5000.0f)
-			x += CURSOR_STEP;
-		if (xyz_buff[1] < -5000.0f)
 			x -= CURSOR_STEP;
+		if (xyz_buff[1] < -5000.0f)
+			x += CURSOR_STEP;
 	}
-  pbuf[0] = 0x01;
+  pbuf[0] = 0x00;
   pbuf[1] = x;
   pbuf[2] = y;
   pbuf[3] = 0;
