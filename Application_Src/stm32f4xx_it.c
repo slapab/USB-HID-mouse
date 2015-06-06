@@ -49,6 +49,10 @@ uint8_t HID_Buffer[4];
 extern USBD_HandleTypeDef USBD_Device;
 static void GetPointerData(uint8_t *pbuf);
 static float xyz_buff[3];
+//char buff_disp_xyz[30];
+
+#define CURSOR_STEP     5
+#define ABS(x) (((x) > 0) ? (x) : (-x))
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
@@ -261,12 +265,26 @@ void OTG_HS_WKUP_IRQHandler(void)
   */
 static void GetPointerData(uint8_t *pbuf)
 {
-  
-  BSP_GYRO_GetXYZ(xyz_buff);
-  pbuf[0] = 0;
-  pbuf[1] = (uint8_t)xyz_buff[0];
-  pbuf[2] = (uint8_t)xyz_buff[1];
+  int8_t x = 0, y = 0;
+	BSP_GYRO_GetXYZ(xyz_buff);
+	if (ABS(xyz_buff[0]) > ABS(xyz_buff[1])) {
+		if (xyz_buff[0] > 5000.0f)
+			y += CURSOR_STEP;
+		if (xyz_buff[0] < -5000.0f)
+			y -= CURSOR_STEP;
+		}
+	else if (ABS(xyz_buff[0]) < ABS(xyz_buff[1])) {
+		if (xyz_buff[1] > 5000.0f)
+			x += CURSOR_STEP;
+		if (xyz_buff[1] < -5000.0f)
+			x -= CURSOR_STEP;
+	}
+  pbuf[0] = 0x01;
+  pbuf[1] = x;
+  pbuf[2] = y;
   pbuf[3] = 0;
+
+	
 }
 
 /** 

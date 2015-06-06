@@ -363,7 +363,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER,STM32F429xx,USE_USB_FS,</Define>
+              <Define>USE_HAL_DRIVER,STM32F429xx,USE_USB_HS_IN_FS,USE_USB_HS</Define>
               <Undefine></Undefine>
               <IncludePath>..\Application_Inc;..\BSP_Drivers;..\BSP_STM32F429I_DISCO_LIBs;..\CMSIS\Include;..\STM32F4xx_HAL_Drivers\Inc;..\BSP_STM32F429I_DISCO_LIBs\Fonts;..\STM32_USB_Device_Library\Class\HID\Inc;..\STM32_USB_Device_Library\Core\Inc</IncludePath>
             </VariousControls>

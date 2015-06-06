@@ -104,6 +104,8 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 	
+	 if (BSP_GYRO_Init() != GYRO_OK) 
+		 BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"GYRO_ERROR", CENTER_MODE);
 		   /* Init Device Library */
   USBD_Init(&USBD_Device, &HID_Desc, 0);
   
@@ -111,8 +113,8 @@ int main(void)
   USBD_RegisterClass(&USBD_Device, USBD_HID_CLASS);
   
   /* Start Device Process */
-  USBD_Start(&USBD_Device);
-	
+ USBD_Start(&USBD_Device);
+	 BSP_GYRO_Reset();
 
 
   /* Configure LED3 */
@@ -146,48 +148,47 @@ int main(void)
   BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
   
   /* Display LCD messages */
-	 if (BSP_GYRO_Init() != GYRO_OK) 
-		 BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"GYRO_ERROR", CENTER_MODE);
-	 
+	
+	
   //BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"STM32F429I BSP", CENTER_MODE);
 	/* Read Gyro Angular data */
-    BSP_GYRO_GetXYZ(xyz_buff);
+   // BSP_GYRO_GetXYZ(xyz_buff);
     
     /* Update autoreload and capture compare registers value */
-    Xval = xyz_buff[0];
+  /*  Xval = xyz_buff[0];
     Yval = xyz_buff[1]; 
     Zval = xyz_buff[2]; 
 		
 		snprintf(buff_disp_xyz, 28, "x: %d y:%d z:%d", (int32_t)Xval, (int32_t)Yval, (int32_t)Zval);
-		BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)buff_disp_xyz, LEFT_MODE);
+		BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)buff_disp_xyz, LEFT_MODE);*/
 	
 	//############# 2 warstawa - test
 	
 	// Select Background Layer
-	BSP_LCD_SelectLayer(LCD_BACKGROUND_LAYER);
+	//BSP_LCD_SelectLayer(LCD_BACKGROUND_LAYER);
 	
 	/* Clear the LCD */ 
-  BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGREEN); 
-  BSP_LCD_Clear(LCD_COLOR_LIGHTBLUE);
+  //BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGREEN); 
+ // BSP_LCD_Clear(LCD_COLOR_LIGHTBLUE);
 	
 	
-	BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
-  BSP_LCD_SetFont(&Font16);
-  BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
+//	BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);  
+ // BSP_LCD_SetFont(&Font16);
+ // BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
 	
-	BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
-	Point some_poly[5] = { { 0, 100}, {10, 120}, { 15, 135} , {75, 105}, {85, 85} } ;
-	BSP_LCD_DrawPolygon( &some_poly[0], 5 ) ;
-	BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
-	BSP_LCD_FillPolygon( &some_poly[0], 5 );
+	//BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
+//	Point some_poly[5] = { { 0, 100}, {10, 120}, { 15, 135} , {75, 105}, {85, 85} } ;
+//	BSP_LCD_DrawPolygon( &some_poly[0], 5 ) ;
+//	BSP_LCD_SetBackColor( LCD_COLOR_LIGHTCYAN) ;
+//	BSP_LCD_FillPolygon( &some_poly[0], 5 );
 	
 	
 	// ######## TOUCH PANEL ############
-  status = BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
-	if ( status == TS_OK ) {
+ // status = BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
+	//if ( status == TS_OK ) {
 		
 		// Additional initialization ( interrupts and fifo threshol )
-		BSP_TS_Init_extends(TS_I2C_ADDRESS, 10 );
+	//	BSP_TS_Init_extends(TS_I2C_ADDRESS, 10 );
 		
 		/*
 		BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
@@ -208,7 +209,7 @@ int main(void)
 			}
 		}
 		*/
-	}
+	//}
 	/*
 	HAL_Delay(1000);
 	
@@ -234,23 +235,25 @@ int main(void)
   while (1)
   {
 		
-
+// BSP_GYRO_Reset();
+	//	HAL_Delay(700) ;
 		 /* Read Gyro Angular data */
   //  BSP_GYRO_GetXYZ(xyz_buff);
     
     /* Update autoreload and capture compare registers value */
-  /*  Xval = xyz_buff[0];
-    Yval = xyz_buff[1]; 
-    Zval = xyz_buff[2]; 
+   // Xval = xyz_buff[0];
+   // Yval = xyz_buff[1]; 
+   // Zval = xyz_buff[2]; 
 		
-		snprintf(buff_disp_xyz, 28, "x: %1.2f y:%1.2f z:%1.2f", Xval, Yval, Zval);
-		BSP_LCD_DisplayStringAt(0, 50, (uint8_t*)buff_disp_xyz, CENTER_MODE);*/
+		//snprintf(buff_disp_xyz, 28, "x: %1.2f y:%1.2f z:%1.2f", Xval, Yval, Zval);
+		//BSP_LCD_DisplayStringAt(0, 50, (uint8_t*)buff_disp_xyz, CENTER_MODE);
 		
-		TS_checkEvent( TS_I2C_ADDRESS ) ;
+	//	TS_checkEvent( TS_I2C_ADDRESS ) ;
+	//	snprintf(buff_disp_xyz, 28, "x: %f y:%f ", xyz_buff[0], xyz_buff[1]);
+	//	BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)buff_disp_xyz, LEFT_MODE);
 		
-		/*
-		HAL_Delay(1500) ;
-		BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
+	//	HAL_Delay(700) ;
+		/*BSP_LCD_SetLayerVisible(LCD_BACKGROUND_LAYER, ENABLE);
 		BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, DISABLE);
 		HAL_Delay(1500) ;
 		BSP_LCD_SetLayerVisible(LCD_FOREGROUND_LAYER, ENABLE);
