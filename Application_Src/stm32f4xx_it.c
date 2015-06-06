@@ -58,8 +58,8 @@ extern USBD_HandleTypeDef USBD_Device;
 static void GetPointerData(uint8_t *pbuf);
 static float xyz_buff[3];
 //char buff_disp_xyz[30];
-
-#define CURSOR_STEP     5
+TS_mouseInputTypeDef mouse_state = TS_MOUSE_NONE;
+#define CURSOR_STEP     1
 #define ABS(x) (((x) > 0) ? (x) : (-x))
 //////////////////////////////////////////////////////////////////////
 /** @addtogroup STM32F4xx_HAL_Examples
@@ -185,13 +185,13 @@ void SysTick_Handler (void)
 	if (ts_slider_hop_time > 0 )
 		++ts_slider_hop_time ;
 	
-  /* check Joystick state every polling interval (10ms) */
+  /* check Joystick state every polling interval (1ms) */
   if (counter++ == USBD_HID_GetPollingInterval(&USBD_Device))
   {  
     GetPointerData(HID_Buffer);
     
     /* send data though IN endpoint*/
-    if((HID_Buffer[1] != 0) || (HID_Buffer[2] != 0))
+    if((HID_Buffer[1] != 0) || (HID_Buffer[1] != 0) || HID_Buffer[2] != 0 || HID_Buffer[3] != 0 )
     {
       USBD_HID_SendReport(&USBD_Device, HID_Buffer, 4);
     }
@@ -282,22 +282,29 @@ static void GetPointerData(uint8_t *pbuf)
 {
   int8_t x = 0, y = 0;
 	BSP_GYRO_GetXYZ(xyz_buff);
-	if (ABS(xyz_buff[0]) > ABS(xyz_buff[1])) {
-		if (xyz_buff[0] > 5000.0f)
+		if (xyz_buff[0] > 10000.0f)
 			y += CURSOR_STEP;
-		if (xyz_buff[0] < -5000.0f)
+		if (xyz_buff[0] < -10000.0f)
 			y -= CURSOR_STEP;
-		}
-	else if (ABS(xyz_buff[0]) < ABS(xyz_buff[1])) {
-		if (xyz_buff[1] > 5000.0f)
+		if (xyz_buff[1] > 10000.0f)
 			x -= CURSOR_STEP;
-		if (xyz_buff[1] < -5000.0f)
+		if (xyz_buff[1] < -10000.0f)
 			x += CURSOR_STEP;
-	}
-  pbuf[0] = 0x00;
+	mouse_state = TS_getCurrMouseState();
+	if (mouse_state == TS_MOUSE_LEFT)
+		pbuf[0] = 0x01;
+	else if (mouse_state == TS_MOUSE_RIGHT)
+		pbuf[0] = 0x02;
+	else
+		pbuf[0] = 0;
   pbuf[1] = x;
   pbuf[2] = y;
-  pbuf[3] = 0;
+	if (mouse_state == TS_MOUSE_SLIDER_UP)
+    pbuf[3] = 1;
+	else if (mouse_state == TS_MOUSE_SLIDER_DOWN)
+		pbuf[3] = -1;
+	else
+		pbuf[3] = 0;
 
 	
 }
