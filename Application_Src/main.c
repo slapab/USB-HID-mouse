@@ -41,7 +41,7 @@
 #include "stm32f429xx.h"
 #include "stm32f4xx.h"
 #include "main.h"
-#include "stm32f429i_discovery_gyroscope.h"
+
 #include "ts_api_extends.h"
 
 
@@ -76,8 +76,7 @@ void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) ;
   */
 #define COMMENT 0
 
-
-float xyz_buff[3];
+static float xyz_buff[3];
 char buff_disp_xyz[30];
 float Xval, Yval, Zval = 0x00;
 	
@@ -113,6 +112,8 @@ int main(void)
   
   /* Start Device Process */
   USBD_Start(&USBD_Device);
+	
+
 
   /* Configure LED3 */
   BSP_LED_Init(LED3);   
@@ -123,7 +124,7 @@ int main(void)
 
 	BSP_LCD_Init();
 	
-	
+
 	//BSP_LCD_SetLayerAddress( LCD_BACKGROUND_LAYER, LCD_FRAME_BUFFER );
 	//BSP_LCD_SetLayerAddress( LCD_FOREGROUND_LAYER, LCD_FRAME_BUFFER+BUFFER_OFFSET );
 	// Init LCD buffers for layers
@@ -229,9 +230,11 @@ int main(void)
 	*/
 	
 
-	
+
   while (1)
   {
+		
+
 		 /* Read Gyro Angular data */
   //  BSP_GYRO_GetXYZ(xyz_buff);
     
@@ -279,9 +282,10 @@ int main(void)
       HAL_Delay(50);
     }
     HAL_Delay(500);
-		#endif
-    
-  }
+
+    #endif
+  } 
+
 }
 
 
