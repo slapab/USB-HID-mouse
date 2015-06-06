@@ -76,10 +76,6 @@ void uint16toASCII( uint16_t _val_ , uint8_t *ptr ) ;
   */
 #define COMMENT 0
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 19cdaf390e915d7b1f2b91007cfa63b355802249
 static float xyz_buff[3];
 char buff_disp_xyz[30];
 float Xval, Yval, Zval = 0x00;
