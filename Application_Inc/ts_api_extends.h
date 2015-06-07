@@ -6,7 +6,7 @@
 
 #define TS_CHECKING_PERIOD 20			// in ms
 #define TS_FIFO_THRESHOLD_VALUE 12
-#define TS_SLIDER_HOP_TIME 120		// in ms
+#define TS_SLIDER_HOP_TIME 15		// in ms
 
 
 #define TS_NOTIFIED_FUNCTION_NO 4

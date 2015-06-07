@@ -59,7 +59,7 @@
 #include "stm32f429i_discovery_ts.h"
 #include "ts_api_extends.h"
 
-
+#include "stm32f4xx_it.h"
 #include "stm32f429i_discovery_gyroscope.h"
 
 /* Exported types ------------------------------------------------------------*/

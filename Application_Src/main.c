@@ -44,6 +44,7 @@
 
 #include "ts_api_extends.h"
 #include "lcd_layout.h"
+#include "usb_mouse_api.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -72,6 +73,8 @@ static void SystemClock_Config(void);
 	
 USBD_HandleTypeDef USBD_Device;
 extern PCD_HandleTypeDef hpcd;
+volatile uint8_t gyro_interval = 0;
+extern uint8_t HID_Buffer[4];	// store cursor movement and buttons action for USB HID
 
 #define COMMENT 0
 
@@ -120,6 +123,10 @@ int main(void)
 		if ( 0 == TS_registerNotifyFunc( &lcd_handleMouseNotify ) )
 			BSP_LED_On( LED4 ) ;
 		
+		// register usb notify handle function
+		if ( 0 == TS_registerNotifyFunc(&usb_handleMouseNotify) ) 
+			BSP_LED_On( LED4 ) ;
+		
 	}
 	
   while (1)
@@ -127,7 +134,10 @@ int main(void)
 		
 		TS_checkEvent( TS_I2C_ADDRESS ) ;
 		lcd_drawAction() ;
-		
+		if (gyro_interval == 3) {
+			GetPointerData(HID_Buffer);
+			gyro_interval = 0;
+		}
 
 		
 		
