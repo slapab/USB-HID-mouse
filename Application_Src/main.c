@@ -73,9 +73,9 @@ static void SystemClock_Config(void);
 	
 USBD_HandleTypeDef USBD_Device;
 extern PCD_HandleTypeDef hpcd;
-volatile uint8_t gyro_interval = 0;
 extern uint8_t HID_Buffer[4];	// store cursor movement and buttons action for USB HID
-
+extern uint8_t GYRO_Buffer[4];
+uint8_t gyro_interval = 0;
 #define COMMENT 0
 
 int main(void)
@@ -134,11 +134,12 @@ int main(void)
 		
 		TS_checkEvent( TS_I2C_ADDRESS ) ;
 		lcd_drawAction() ;
-		if (gyro_interval == 3) {
-			GetPointerData(HID_Buffer);
+		GetGyroData();
+		if (gyro_interval >= 1) {
+			GetPointerData();
 			gyro_interval = 0;
 		}
-
+		
 		
 		
 		

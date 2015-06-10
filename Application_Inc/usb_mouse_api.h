@@ -6,9 +6,11 @@
 
 #define CURSOR_STEP 1
 #define GYRO_SENSITIVITY 30000.0f
+#define MAX_UINT64 0xFFFFFFFFFFFFFFFF
+
 void usb_handleMouseNotify( TS_mouseInputTypeDef _state_, const Point * const _inData_ ) ;	
 
-void GetPointerData(uint8_t *pbuf);
-
+void GetPointerData( void );
+void GetGyroData( void );
 
 #endif

@@ -55,7 +55,7 @@ extern volatile sig_atomic_t ts_slider_hop_time ;
 extern PCD_HandleTypeDef hpcd;
 extern uint8_t HID_Buffer[4];
 extern USBD_HandleTypeDef USBD_Device;
-extern uint8_t unclick;
+extern volatile uint8_t unclick;
 extern volatile uint8_t gyro_interval;
 //////////////////////////////////////////////////////////////////////
 /** @addtogroup STM32F4xx_HAL_Examples
@@ -178,10 +178,9 @@ void SysTick_Handler (void)
 	// For touch driver purposes
 	++ts_buttons_delay ;
 	++ts_mouse_last_signal_delay ;
-	++gyro_interval;
 	if (ts_slider_hop_time > 0 )
 		++ts_slider_hop_time ;
-	
+	++gyro_interval;
   /* check Joystick state every polling interval (1ms) */
   if (counter++ == USBD_HID_GetPollingInterval(&USBD_Device))
   {  
