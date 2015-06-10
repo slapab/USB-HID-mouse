@@ -177,92 +177,17 @@
           <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048 -FS08000000 -FL0200000 -FP0($$Device:STM32F429ZITx$CMSIS/Flash/STM32F4xx_2048.FLM))</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>49</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134222274</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Application_Src\usb_mouse_api.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\auk_project\../Application_Src/usb_mouse_api.c\49</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>71</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134222506</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Application_Src\usb_mouse_api.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\auk_project\../Application_Src/usb_mouse_api.c\71</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>45</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134222202</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Application_Src\usb_mouse_api.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\auk_project\../Application_Src/usb_mouse_api.c\45</Expression>
-        </Bp>
-        <Bp>
-          <Number>3</Number>
-          <Type>0</Type>
-          <LineNumber>83</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>..\Application_Src\usb_mouse_api.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <WatchWindow1>
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>GYRO_Buffer[4],0x10</ItemText>
+          <ItemText>pbuf</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pbuf</ItemText>
-        </Ww>
-        <Ww>
-          <count>2</count>
-          <WinNumber>1</WinNumber>
           <ItemText>pbuf + 1</ItemText>
-        </Ww>
-        <Ww>
-          <count>3</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>pbuf + 7</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
